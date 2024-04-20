@@ -1,52 +1,62 @@
-// Get references to the custom name input box, randomize button, and story paragraph
-const customName = document.getElementById('customname');
-const randomize = document.querySelector('.randomize');
-const story = document.querySelector('.story');
+// Get references to the displayed image, thumbnail bar, button, and overlay
+const displayedImage = document.querySelector('.displayed-img');
+const thumbBar = document.querySelector('.thumb-bar');
+const btn = document.querySelector('button');
+const overlay = document.querySelector('.overlay');
 
-// Function to return a random value from an array
-function randomValueFromArray(array){
-  const random = Math.floor(Math.random()*array.length);
-  return array[random];
+// Array of image filenames and object of alternative texts for each image
+const images = ['pic1.jpg', 'pic2.jpg', 'pic3.jpg', 'pic4.jpg', 'pic5.jpg'];
+const alts = {
+  'pic1.jpg' : 'human eye',
+  'pic2.jpg' : 'wavey object',
+  'pic3.jpg' : 'Purple and white flowers',
+  'pic4.jpg' : 'Aincient Pharaoh picture',
+  'pic5.jpg' : 'moth on a leaf'
 }
 
-// Story text and placeholders
-const storyText = 'It was 94 fahrenheit outside, so :insertx: went for a walk. When they got to :inserty:, they stared in horror for a few moments, then :insertz:. Bob saw the whole thing, but was not surprised — :insertx: weighs 300 pounds, and it was a hot day.';
-const insertX = ['Willy the Goblin', 'Big Daddy', 'Father Christmas'];
-const insertY = ['the soup kitchen', 'Disneyland', 'the White House'];
-const insertZ = ['spontaneously combusted', 'melted into a puddle on the sidewalk', 'turned into a slug and crawled away'];
+// Loop over each image
+for (const image of images) {
+  // Create a new image element and set its source, alternative text, and tabindex
+  const newImage = document.createElement('img');
+  newImage.setAttribute('src', `images/${image}`);
+  newImage.setAttribute('alt', alts[image]);
+  newImage.setAttribute('tabindex', '0'); 
 
-// Add click event listener to the randomize button
-randomize.addEventListener('click', result);
+  // Append the new image to the thumbnail bar
+  thumbBar.appendChild(newImage);
 
-// Function to generate a new random story
-function result() {
-  let newStory = storyText;
+  // Add a click event listener to the new image
+  newImage.addEventListener('click', e => {
+    // When the image is clicked, update the displayed image's source and alternative text
+    displayedImage.src = e.target.src;
+    displayedImage.alt = e.target.alt;
+  });
 
-  // Get random items from the arrays
-  const xItem = randomValueFromArray(insertX);
-  const yItem = randomValueFromArray(insertY);
-  const zItem = randomValueFromArray(insertZ);
-
-  // Replace the placeholders in the story with the random items
-  newStory = newStory.replace(/:insertx:/g, xItem);
-  newStory = newStory.replace(/:inserty:/g, yItem);
-  newStory = newStory.replace(/:insertz:/g, zItem);
-
-  // If a custom name is entered, replace 'Bob' with the custom name
-  if (customName.value !== '') {
-    const name = customName.value;
-    newStory = newStory.replace(/Bob/g, name);
-  }
-
-  // If the UK radio button is checked, convert the weight and temperature to UK units
-  if (document.getElementById("uk").checked) {
-    const weight = `${Math.round(300*0.0714286)} stone`;
-    const temperature =  `${Math.round((94-32) * 5 / 9)} centigrade`;
-    newStory = newStory.replace('94 fahrenheit', temperature);
-    newStory = newStory.replace('300 pounds', weight);
-  }
-
-  // Display the new story
-  story.textContent = newStory;
-  story.style.visibility = 'visible';
+  // Add a keydown event listener to the new image
+  newImage.addEventListener('keydown', function (e) {
+    // When the Enter key is pressed, update the displayed image's source and alternative text
+    if (e.key === 'Enter') {  
+      displayedImage.src = e.target.src;
+      displayedImage.alt = e.target.alt;
+    }
+  });
 }
+
+// Add a click event listener to the button
+btn.addEventListener('click', () => {
+  // Get the current class of the button
+  const btnClass = btn.getAttribute('class');
+
+  // If the button's class is 'dark'
+  if (btnClass === 'dark') {
+    // Change the button's class to 'light', its text to 'Lighten', and the overlay's background color to semi-transparent black
+    btn.setAttribute('class','light');
+    btn.textContent = 'Lighten';
+    overlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
+  } else {
+    // Otherwise, change the button's class to 'dark', its text to 'Darken', and the overlay's background color to fully transparent
+    btn.setAttribute('class','dark');
+    btn.textContent = 'Darken';
+    overlay.style.backgroundColor = 'rgba(0,0,0,0)';
+  }
+});
